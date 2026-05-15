@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model categories {
+  id          String   @id
+  name        String
+  nameZh      String?
+  slug        String   @unique
+  icon        String?
+  description String?
+  toolCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  tools       tools[]
+}
+
+model price_history {
+  id         String   @id
+  toolId     String
+  planName   String
+  price      Float
+  recordedAt DateTime @default(now())
+  tools      tools    @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@index([toolId, recordedAt])
+}
+
+model pricing_plans {
+  id           String  @id
+  toolId       String
+  name         String
+  price        Float
+  billingCycle String
+  isPopular    Boolean @default(false)
+  featuresJson String  @default("[]")
+  tools        tools   @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@index([toolId])
+}
+
+model promo_codes {
+  id         String    @id
+  toolId     String
+  code       String
+  discount   String
+  expiresAt  DateTime?
+  isVerified Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  tools      tools     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@index([toolId])
+}
+
+model tag_on_tool {
+  toolId String
+  tagId  String
+  tags   tags   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tools  tools  @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@id([toolId, tagId])
+}
+
+model tags {
+  id          String        @id
+  name        String        @unique
+  nameZh      String?
+  tag_on_tool tag_on_tool[]
+}
+
+model tool_submissions {
+  id              String    @id
+  submitterName   String?
+  submitterEmail  String?
+  name            String
+  nameZh          String?
+  description     String
+  descriptionZh   String
+  websiteUrl      String
+  logoUrl         String?
+  categoryName    String
+  tagsJson        String    @default("[]")
+  pricingModel    String    @default("freemium")
+  minPrice        Float?
+  status          String    @default("pending")
+  reviewNote      String?
+  reviewedAt      DateTime?
+  reviewerId      String?
+  publishedToolId String?
+  createdAt       DateTime  @default(now())
+}
+
+model tools {
+  id                 String          @id
+  name               String
+  nameZh             String?
+  slug               String          @unique
+  description        String
+  descriptionZh      String
+  websiteUrl         String
+  logoUrl            String?
+  developer          String?
+  founded            String?
+  platforms          String?
+  categoryId         String
+  pricingModel       String          @default("freemium")
+  minPrice           Float?
+  maxPrice           Float?
+  hasFreeTrial       Boolean         @default(false)
+  rating             Float           @default(0)
+  reviewCount        Int             @default(0)
+  viewCount          Int             @default(0)
+  monthlyVisits      String?
+  sourceType         String          @default("manual")
+  lastPriceCheckedAt DateTime?
+  isVerified         Boolean         @default(false)
+  isFeatured         Boolean         @default(false)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime
+  price_history      price_history[]
+  pricing_plans      pricing_plans[]
+  promo_codes        promo_codes[]
+  tag_on_tool        tag_on_tool[]
+  categories         categories      @relation(fields: [categoryId], references: [id])
+
+  @@index([name])
+  @@index([pricingModel])
+  @@index([slug])
+  @@index([categoryId])
+}
