@@ -3,14 +3,12 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-// Support both GET and POST for easier triggering
 export async function GET() {
   return POST();
 }
 
 export async function POST() {
   try {
-    // 清空现有数据
     await prisma.tool_submissions.deleteMany();
     await prisma.promo_codes.deleteMany();
     await prisma.price_history.deleteMany();
@@ -20,186 +18,105 @@ export async function POST() {
     await prisma.categories.deleteMany();
     await prisma.tags.deleteMany();
 
-    // 分类数据
     const categories = [
-      { name: "Writing", nameZh: "写作与内容", slug: "writing", icon: "️" },
+      { name: "Writing", nameZh: "写作与内容", slug: "writing", icon: "✍️" },
       { name: "Coding", nameZh: "编程与开发", slug: "coding", icon: "💻" },
       { name: "Image Generation", nameZh: "图像生成", slug: "image-gen", icon: "🎨" },
       { name: "Video & Animation", nameZh: "视频与动画", slug: "video", icon: "🎬" },
       { name: "Audio & Voice", nameZh: "音频与语音", slug: "audio", icon: "🎤" },
       { name: "Productivity", nameZh: "生产力与效率", slug: "productivity", icon: "⚡" },
-      { name: "Marketing & SEO", nameZh: "营销与SEO", slug: "marketing", icon: "📈" },
+      { name: "Marketing & SEO", nameZh: "营销与SEO", slug: "marketing", icon: "" },
       { name: "Data Analysis", nameZh: "数据分析", slug: "data-analysis", icon: "📊" },
       { name: "Education", nameZh: "教育与学习", slug: "education", icon: "🎓" },
       { name: "Design & UI/UX", nameZh: "设计与UI/UX", slug: "design", icon: "🖌️" },
     ];
-
     const catMap: Record<string, string> = {};
     for (const c of categories) {
-      const created = await prisma.categories.create({
-        data: { ...c, id: `cat-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` },
-      });
+      const created = await prisma.categories.create({ data: { ...c, id: `cat-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` } });
       catMap[c.slug] = created.id;
     }
 
-    // 标签数据
     const tags = [
-      { name: "writing", nameZh: "写作" },
-      { name: "chat-bot", nameZh: "聊天机器人" },
-      { name: "coding", nameZh: "编程" },
-      { name: "image-gen", nameZh: "图像生成" },
-      { name: "video-gen", nameZh: "视频生成" },
-      { name: "audio-gen", nameZh: "音频生成" },
-      { name: "productivity", nameZh: "效率" },
-      { name: "marketing", nameZh: "营销" },
-      { name: "data-analysis", nameZh: "数据分析" },
-      { name: "education", nameZh: "教育" },
-      { name: "design", nameZh: "设计" },
-      { name: "api", nameZh: "API" },
-      { name: "open-source", nameZh: "开源" },
-      { name: "enterprise", nameZh: "企业级" },
+      { name: "writing", nameZh: "写作" }, { name: "chat-bot", nameZh: "聊天机器人" },
+      { name: "coding", nameZh: "编程" }, { name: "image-gen", nameZh: "图像生成" },
+      { name: "video-gen", nameZh: "视频生成" }, { name: "audio-gen", nameZh: "音频生成" },
+      { name: "productivity", nameZh: "效率" }, { name: "marketing", nameZh: "营销" },
+      { name: "data-analysis", nameZh: "数据分析" }, { name: "education", nameZh: "教育" },
+      { name: "design", nameZh: "设计" }, { name: "api", nameZh: "API" },
+      { name: "open-source", nameZh: "开源" }, { name: "enterprise", nameZh: "企业级" },
       { name: "free-tier", nameZh: "免费版" },
     ];
-
     const tagMap: Record<string, string> = {};
     for (const t of tags) {
-      const created = await prisma.tags.create({
-        data: { ...t, id: `tag-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` },
-      });
+      const created = await prisma.tags.create({ data: { ...t, id: `tag-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` } });
       tagMap[t.name] = created.id;
     }
 
-    // 核心工具数据（精选工具）
     const tools = [
-      {
-        name: "ChatGPT", nameZh: "ChatGPT", slug: "chatgpt",
-        description: "Advanced AI chatbot with GPT-4o, used for writing, coding, and more.",
-        descriptionZh: "基于 GPT-4o 的先进 AI 聊天机器人，用于写作、编程等。",
-        websiteUrl: "https://chat.openai.com", logoUrl: "",
-        developer: "OpenAI", founded: "2022", platforms: "Web,iOS,Android",
-        categorySlug: "writing", tagNames: ["writing", "chat-bot"],
-        pricingModel: "freemium", minPrice: 20, isFeatured: true,
-        plans: [
-          { name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["GPT-3.5", "标准速度"] },
-          { name: "Plus", nameZh: "Plus", price: 20, billingCycle: "monthly", isPopular: true, features: ["GPT-4o", "更快速度", "DALL-E"] },
-        ],
-      },
-      {
-        name: "Claude", nameZh: "Claude", slug: "claude",
-        description: "Constitutional AI assistant by Anthropic, excels at writing and analysis.",
-        descriptionZh: "Anthropic 推出的 constitutional AI 助手，擅长写作与分析。",
-        websiteUrl: "https://claude.ai", logoUrl: "",
-        developer: "Anthropic", founded: "2023", platforms: "Web,iOS",
-        categorySlug: "writing", tagNames: ["writing", "chat-bot"],
-        pricingModel: "freemium", minPrice: 20, isFeatured: true,
-        plans: [
-          { name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["Claude 3.5 Sonnet", "有限次数"] },
-          { name: "Pro", nameZh: "Pro", price: 20, billingCycle: "monthly", isPopular: true, features: ["Claude 3.7 Sonnet", "优先访问", "更大上下文"] },
-        ],
-      },
-      {
-        name: "Midjourney", nameZh: "Midjourney", slug: "midjourney",
-        description: "AI image generation tool known for high-quality artistic outputs.",
-        descriptionZh: "以高质量艺术输出闻名的 AI 图像生成工具。",
-        websiteUrl: "https://www.midjourney.com", logoUrl: "",
-        developer: "Midjourney Inc.", founded: "2022", platforms: "Discord,Web",
-        categorySlug: "image-gen", tagNames: ["image-gen", "design"],
-        pricingModel: "paid", minPrice: 10, isFeatured: true,
-        plans: [
-          { name: "Basic", nameZh: "基础版", price: 10, billingCycle: "monthly", features: ["3.3小时/月", "标准商用"] },
-          { name: "Standard", nameZh: "标准版", price: 30, billingCycle: "monthly", isPopular: true, features: ["15小时/月", "无限放松模式"] },
-        ],
-      },
-      {
-        name: "GitHub Copilot", nameZh: "GitHub Copilot", slug: "github-copilot",
-        description: "AI pair programmer that suggests code and whole functions in real-time.",
-        descriptionZh: "AI 结对编程助手，实时建议代码和完整函数。",
-        websiteUrl: "https://github.com/features/copilot", logoUrl: "",
-        developer: "GitHub (Microsoft)", founded: "2022", platforms: "VS Code,JetBrains,Neovim,Web",
-        categorySlug: "coding", tagNames: ["coding", "productivity"],
-        pricingModel: "freemium", minPrice: 10, isFeatured: true,
-        plans: [
-          { name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["学生/维护者免费", "有限补全"] },
-          { name: "Pro", nameZh: "Pro", price: 10, billingCycle: "monthly", isPopular: true, features: ["无限补全", "Chat", "CLI"] },
-        ],
-      },
-      {
-        name: "Cursor", nameZh: "Cursor", slug: "cursor",
-        description: "AI-first code editor with GPT-4 and Claude built in.",
-        descriptionZh: "内置 GPT-4 和 Claude 的 AI 优先代码编辑器。",
-        websiteUrl: "https://cursor.sh", logoUrl: "",
-        developer: "Cursor Inc.", founded: "2023", platforms: "Web,VS Code Extension",
-        categorySlug: "coding", tagNames: ["coding", "open-source"],
-        pricingModel: "freemium", minPrice: 20, isFeatured: true,
-        plans: [
-          { name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["每月2000次补全", "50次聊天"] },
-          { name: "Pro", nameZh: "Pro", price: 20, billingCycle: "monthly", isPopular: true, features: ["无限补全", "无限聊天", "GPT-4o"] },
-        ],
-      },
+      { name: "ChatGPT", nameZh: "ChatGPT", slug: "chatgpt", description: "Advanced AI chatbot with GPT-4o, used for writing, coding, and more.", descriptionZh: "基于 GPT-4o 的先进 AI 聊天机器人，用于写作、编程等。", websiteUrl: "https://chat.openai.com", logoUrl: "", developer: "OpenAI", founded: "2022", platforms: "Web,iOS,Android", categorySlug: "writing", tagNames: ["writing", "chat-bot"], pricingModel: "freemium", minPrice: 20, isFeatured: true, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["GPT-3.5", "标准速度"] }, { name: "Plus", nameZh: "Plus", price: 20, billingCycle: "monthly", isPopular: true, features: ["GPT-4o", "更快速度", "DALL-E"] }, { name: "Pro", nameZh: "Pro", price: 200, billingCycle: "monthly", features: ["无限访问", "o1 Pro", "高级语音"] }], promoCode: { code: "SAVE20", discount: "首月8折", expiresAt: "2026-06-01" } },
+      { name: "Claude", nameZh: "Claude", slug: "claude", description: "Constitutional AI assistant by Anthropic, excels at writing and analysis.", descriptionZh: "Anthropic 推出的 constitutional AI 助手，擅长写作与分析。", websiteUrl: "https://claude.ai", logoUrl: "", developer: "Anthropic", founded: "2023", platforms: "Web,iOS", categorySlug: "writing", tagNames: ["writing", "chat-bot"], pricingModel: "freemium", minPrice: 20, isFeatured: true, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["Claude 3.5 Sonnet", "有限次数"] }, { name: "Pro", nameZh: "Pro", price: 20, billingCycle: "monthly", isPopular: true, features: ["Claude 3.7 Sonnet", "优先访问", "更大上下文"] }] },
+      { name: "Notion AI", nameZh: "Notion AI", slug: "notion-ai", description: "AI writing assistant integrated into Notion workspaces.", descriptionZh: "集成在 Notion 工作空间中的 AI 写作助手。", websiteUrl: "https://www.notion.so", logoUrl: "", developer: "Notion", founded: "2023", platforms: "Web,iOS,Android", categorySlug: "writing", tagNames: ["writing", "productivity"], pricingModel: "freemium", minPrice: 10, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["每月20次AI请求", "基础功能"] }, { name: "AI Add-on", nameZh: "AI 附加包", price: 10, billingCycle: "monthly", isPopular: true, features: ["无限AI请求", "高级写作助手"] }] },
+      { name: "Jasper", nameZh: "Jasper", slug: "jasper", description: "AI content platform for marketing teams to create on-brand content.", descriptionZh: "面向营销团队的 AI 内容平台，用于创建品牌一致的内容。", websiteUrl: "https://www.jasper.ai", logoUrl: "", developer: "Jasper AI", founded: "2021", platforms: "Web", categorySlug: "writing", tagNames: ["writing", "marketing"], pricingModel: "paid", minPrice: 39, plans: [{ name: "Creator", nameZh: "创作者", price: 39, billingCycle: "monthly", features: ["1人", "1品牌声音", "基础模板"] }, { name: "Pro", nameZh: "专业版", price: 59, billingCycle: "monthly", isPopular: true, features: ["3人", "多品牌声音", "SEO模式"] }] },
+      { name: "Grammarly", nameZh: "Grammarly", slug: "grammarly", description: "AI-powered writing assistant for grammar, clarity, and tone.", descriptionZh: "基于 AI 的写作助手，提供语法、清晰度和语调建议。", websiteUrl: "https://www.grammarly.com", logoUrl: "", developer: "Grammarly Inc.", founded: "2009", platforms: "Web,iOS,Android,Chrome", categorySlug: "writing", tagNames: ["writing", "free-tier"], pricingModel: "freemium", minPrice: 12, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["基础语法检查", "拼写检查"] }, { name: "Premium", nameZh: "高级版", price: 12, billingCycle: "monthly", isPopular: true, features: ["高级建议", "语调调整", "抄袭检测"] }] },
+      { name: "GitHub Copilot", nameZh: "GitHub Copilot", slug: "github-copilot", description: "AI pair programmer that suggests code and whole functions in real-time.", descriptionZh: "AI 结对编程助手，实时建议代码和完整函数。", websiteUrl: "https://github.com/features/copilot", logoUrl: "", developer: "GitHub (Microsoft)", founded: "2022", platforms: "VS Code,JetBrains,Neovim,Web", categorySlug: "coding", tagNames: ["coding", "productivity"], pricingModel: "freemium", minPrice: 10, isFeatured: true, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["学生/维护者免费", "有限补全"] }, { name: "Pro", nameZh: "Pro", price: 10, billingCycle: "monthly", isPopular: true, features: ["无限补全", "Chat", "CLI"] }] },
+      { name: "Cursor", nameZh: "Cursor", slug: "cursor", description: "AI-first code editor with GPT-4 and Claude built in.", descriptionZh: "内置 GPT-4 和 Claude 的 AI 优先代码编辑器。", websiteUrl: "https://cursor.sh", logoUrl: "", developer: "Cursor Inc.", founded: "2023", platforms: "Web,VS Code Extension", categorySlug: "coding", tagNames: ["coding", "open-source"], pricingModel: "freemium", minPrice: 20, isFeatured: true, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["每月2000次补全", "50次聊天"] }, { name: "Pro", nameZh: "Pro", price: 20, billingCycle: "monthly", isPopular: true, features: ["无限补全", "无限聊天", "GPT-4o"] }] },
+      { name: "Replit", nameZh: "Replit", slug: "replit", description: "Online IDE with AI coding agent that builds apps from prompts.", descriptionZh: "带 AI 编程代理的在线 IDE，可通过提示词构建应用。", websiteUrl: "https://replit.com", logoUrl: "", developer: "Replit Inc.", founded: "2016", platforms: "Web,iOS,Android", categorySlug: "coding", tagNames: ["coding", "free-tier"], pricingModel: "freemium", minPrice: 7, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["基础开发环境", "公开Repls"] }, { name: "Core", nameZh: "Core", price: 7, billingCycle: "monthly", isPopular: true, features: ["私有Repls", "AI助手", "更多存储"] }] },
+      { name: "Tabnine", nameZh: "Tabnine", slug: "tabnine", description: "AI code completion tool that runs locally for privacy-conscious teams.", descriptionZh: "可在本地运行的 AI 代码补全工具，适合注重隐私的团队。", websiteUrl: "https://www.tabnine.com", logoUrl: "", developer: "Tabnine", founded: "2017", platforms: "VS Code,JetBrains,Vim,Neovim", categorySlug: "coding", tagNames: ["coding", "enterprise"], pricingModel: "freemium", minPrice: 12, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["基础补全", "公共模型"] }, { name: "Pro", nameZh: "Pro", price: 12, billingCycle: "monthly", isPopular: true, features: ["高级模型", "私有部署"] }] },
+      { name: "Codeium", nameZh: "Codeium", slug: "codeium", description: "Free AI-powered code completion and chat for developers.", descriptionZh: "面向开发者的免费 AI 代码补全和聊天工具。", websiteUrl: "https://codeium.com", logoUrl: "", developer: "Codeium Inc.", founded: "2022", platforms: "VS Code,JetBrains,Vim,Neovim", categorySlug: "coding", tagNames: ["coding", "free-tier"], pricingModel: "freemium", minPrice: 0, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["无限补全", "70+语言", "Chat"] }, { name: "Enterprise", nameZh: "企业版", price: 12, billingCycle: "monthly", features: ["SSO", "私有部署", "管理控制台"] }] },
+      { name: "Midjourney", nameZh: "Midjourney", slug: "midjourney", description: "AI image generation tool known for high-quality artistic outputs.", descriptionZh: "以高质量艺术输出闻名的 AI 图像生成工具。", websiteUrl: "https://www.midjourney.com", logoUrl: "", developer: "Midjourney Inc.", founded: "2022", platforms: "Discord,Web", categorySlug: "image-gen", tagNames: ["image-gen", "design"], pricingModel: "paid", minPrice: 10, isFeatured: true, plans: [{ name: "Basic", nameZh: "基础版", price: 10, billingCycle: "monthly", features: ["3.3小时/月", "标准商用"] }, { name: "Standard", nameZh: "标准版", price: 30, billingCycle: "monthly", isPopular: true, features: ["15小时/月", "无限放松模式"] }] },
+      { name: "DALL-E 3", nameZh: "DALL-E 3", slug: "dall-e-3", description: "OpenAI's text-to-image model with high prompt accuracy.", descriptionZh: "OpenAI 的文本生成图像模型，提示词准确性高。", websiteUrl: "https://openai.com/dall-e-3", logoUrl: "", developer: "OpenAI", founded: "2023", platforms: "Web,iOS", categorySlug: "image-gen", tagNames: ["image-gen", "api"], pricingModel: "paid", minPrice: 20, isFeatured: true, plans: [{ name: "ChatGPT Plus", nameZh: "ChatGPT Plus", price: 20, billingCycle: "monthly", features: ["DALL-E 3 集成", "有限生成次数"] }, { name: "API Pay-as-you-go", nameZh: "API 按量付费", price: 0.04, billingCycle: "per-image", features: ["按图计费", "API集成"] }] },
+      { name: "Stable Diffusion", nameZh: "Stable Diffusion", slug: "stable-diffusion", description: "Open-source text-to-image model that can run locally.", descriptionZh: "可本地运行的开源文本生成图像模型。", websiteUrl: "https://stability.ai", logoUrl: "", developer: "Stability AI", founded: "2020", platforms: "Web,Local,Discord", categorySlug: "image-gen", tagNames: ["image-gen", "open-source"], pricingModel: "freemium", minPrice: 0, isFeatured: true, plans: [{ name: "Free (Local)", nameZh: "免费（本地）", price: 0, billingCycle: "one-time", features: ["完全免费", "需GPU", "开源"] }, { name: "DreamStudio", nameZh: "DreamStudio", price: 10, billingCycle: "prepaid", isPopular: true, features: ["云端API", "按需计费", "简单界面"] }] },
+      { name: "Leonardo.ai", nameZh: "Leonardo.ai", slug: "leonardo-ai", description: "AI image generation platform with fine-tuning and dataset training.", descriptionZh: "支持微调和数据集训练的 AI 图像生成平台。", websiteUrl: "https://leonardo.ai", logoUrl: "", developer: "Leonardo Interactive", founded: "2023", platforms: "Web,iOS", categorySlug: "image-gen", tagNames: ["image-gen", "design"], pricingModel: "freemium", minPrice: 10, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["每日150积分", "基础模型"] }, { name: "Apprentice", nameZh: "学徒版", price: 10, billingCycle: "monthly", isPopular: true, features: ["8500积分/月", "无审核限制"] }] },
+      { name: "RunwayML", nameZh: "Runway ML", slug: "runway-ml", description: "AI creative suite for image, video, and 3D generation.", descriptionZh: "集图像、视频、3D 生成为一体的 AI 创意套件。", websiteUrl: "https://runwayml.com", logoUrl: "", developer: "Runway AI Inc.", founded: "2018", platforms: "Web,iOS", categorySlug: "image-gen", tagNames: ["image-gen", "video-gen"], pricingModel: "freemium", minPrice: 12, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["125积分", "加水印导出"] }, { name: "Standard", nameZh: "标准版", price: 12, billingCycle: "monthly", isPopular: true, features: ["625积分", "无水印", "商业许可"] }] },
+      { name: "Sora", nameZh: "Sora", slug: "sora", description: "OpenAI's text-to-video generation model for realistic video creation.", descriptionZh: "OpenAI 的文本生成视频模型，用于创建逼真视频。", websiteUrl: "https://openai.com/sora", logoUrl: "", developer: "OpenAI", founded: "2024", platforms: "Web", categorySlug: "video", tagNames: ["video-gen", "image-gen"], pricingModel: "freemium", minPrice: 20, isFeatured: true, plans: [{ name: "ChatGPT Plus", nameZh: "ChatGPT Plus", price: 20, billingCycle: "monthly", features: ["有限视频生成", "720p分辨率"] }, { name: "Sora Turbo", nameZh: "Sora Turbo", price: 200, billingCycle: "monthly", isPopular: true, features: ["无限生成", "1080p", "下载权限"] }] },
+      { name: "HeyGen", nameZh: "HeyGen", slug: "heygen", description: "AI video generation platform with digital avatars and voice cloning.", descriptionZh: "配备数字人和语音克隆功能的 AI 视频生成平台。", websiteUrl: "https://www.heygen.com", logoUrl: "", developer: "HeyGen Inc.", founded: "2020", platforms: "Web,iOS", categorySlug: "video", tagNames: ["video-gen", "audio-gen"], pricingModel: "freemium", minPrice: 24, isFeatured: true, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["每月1视频", "含水印"] }, { name: "Creator", nameZh: "创作者", price: 24, billingCycle: "monthly", isPopular: true, features: ["15视频/月", "无水印", "自定义头像"] }] },
+      { name: "Synthesia", nameZh: "Synthesia", slug: "synthesia", description: "AI video platform for creating professional videos with avatars.", descriptionZh: "使用数字人创建专业视频的 AI 视频平台。", websiteUrl: "https://www.synthesia.io", logoUrl: "", developer: "Synthesia Ltd.", founded: "2017", platforms: "Web", categorySlug: "video", tagNames: ["video-gen", "education"], pricingModel: "paid", minPrice: 22, plans: [{ name: "Starter", nameZh: "入门版", price: 22, billingCycle: "monthly", features: ["法人身份", "1人像", "720p"] }, { name: "Creator", nameZh: "创作者", price: 67, billingCycle: "monthly", isPopular: true, features: ["自定义人像", "1080p", "品牌模板"] }] },
+      { name: "Pika", nameZh: "Pika", slug: "pika", description: "AI video generation from text, images, or existing videos.", descriptionZh: "基于文本、图像或现有视频的 AI 视频生成工具。", websiteUrl: "https://pika.art", logoUrl: "", developer: "Pika Labs", founded: "2023", platforms: "Web,Discord", categorySlug: "video", tagNames: ["video-gen", "image-gen"], pricingModel: "freemium", minPrice: 8, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["每日30积分", "公开生成"] }, { name: "Standard", nameZh: "标准版", price: 8, billingCycle: "monthly", isPopular: true, features: ["无限积分", "私密生成", "更长视频"] }] },
+      { name: "CapCut", nameZh: "剪映 / CapCut", slug: "capcut", description: "AI-powered video editing tool for social media content creation.", descriptionZh: "面向社交媒体内容创作的 AI 视频编辑工具。", websiteUrl: "https://www.capcut.com", logoUrl: "", developer: "ByteDance", founded: "2020", platforms: "Web,iOS,Android,Desktop", categorySlug: "video", tagNames: ["video-gen", "free-tier"], pricingModel: "freemium", minPrice: 10, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["基础编辑", "免费模板", "AI特效"] }, { name: "Pro", nameZh: "Pro", price: 10, billingCycle: "monthly", isPopular: true, features: ["高级功能", "无水印导出", "商业许可"] }] },
+      { name: "ElevenLabs", nameZh: "ElevenLabs", slug: "elevenlabs", description: "AI voice synthesis platform with realistic text-to-speech and voice cloning.", descriptionZh: "具备逼真文本转语音和语音克隆功能的 AI 语音合成平台。", websiteUrl: "https://elevenlabs.io", logoUrl: "", developer: "ElevenLabs", founded: "2022", platforms: "Web,API", categorySlug: "audio", tagNames: ["audio-gen", "api"], pricingModel: "freemium", minPrice: 11, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["10,000字符/月", "3人声"] }, { name: "Starter", nameZh: "入门版", price: 11, billingCycle: "monthly", isPopular: true, features: ["30,000字符/月", "商用许可"] }] },
+      { name: "Descript", nameZh: "Descript", slug: "descript", description: "All-in-one video and audio editing with AI transcription and overdub.", descriptionZh: "集 AI 转录和语音替换于一体的视频音频编辑工具。", websiteUrl: "https://www.descript.com", logoUrl: "", developer: "Descript Inc.", founded: "2017", platforms: "Web,macOS,Windows", categorySlug: "audio", tagNames: ["audio-gen", "productivity"], pricingModel: "freemium", minPrice: 12, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["1小时转录/月", "水印导出"] }, { name: "Creator", nameZh: "创作者", price: 12, billingCycle: "monthly", isPopular: true, features: ["10小时/月", "AI voices", "无水印"] }] },
+      { name: "Murf", nameZh: "Murf", slug: "murf", description: "AI voice generator for creating studio-quality voiceovers.", descriptionZh: "用于创建录音室品质配音的 AI 语音生成器。", websiteUrl: "https://murf.ai", logoUrl: "", developer: "Murf AI", founded: "2020", platforms: "Web,iOS", categorySlug: "audio", tagNames: ["audio-gen", "marketing"], pricingModel: "freemium", minPrice: 13, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["10分钟", "仅预览"] }, { name: "Creator", nameZh: "创作者", price: 13, billingCycle: "monthly", isPopular: true, features: ["24小时/年", "商用许可", "AI配音"] }] },
+      { name: "Suno", nameZh: "Suno", slug: "suno", description: "AI music generation platform that creates full songs from text prompts.", descriptionZh: "从文本提示词生成完整歌曲的 AI 音乐生成平台。", websiteUrl: "https://suno.com", logoUrl: "", developer: "Suno Inc.", founded: "2023", platforms: "Web", categorySlug: "audio", tagNames: ["audio-gen", "free-tier"], pricingModel: "freemium", minPrice: 10, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["每日50积分", "非商用"] }, { name: "Pro", nameZh: "Pro", price: 10, billingCycle: "monthly", isPopular: true, features: ["500积分/月", "商用许可", "独占版权"] }] },
+      { name: "Auphonic", nameZh: "Auphonic", slug: "auphonic", description: "AI audio post-production tool for podcasts and broadcasts.", descriptionZh: "面向播客和广播的 AI 音频后期处理工具。", websiteUrl: "https://auphonic.com", logoUrl: "", developer: "Auphonic", founded: "2011", platforms: "Web,macOS,Windows,Linux", categorySlug: "audio", tagNames: ["audio-gen", "productivity"], pricingModel: "freemium", minPrice: 11, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["每月2小时", "基础处理"] }, { name: "Standard", nameZh: "标准版", price: 11, billingCycle: "monthly", isPopular: true, features: ["无限处理", "高级算法", "API访问"] }] },
+      { name: "Notion", nameZh: "Notion", slug: "notion", description: "All-in-one workspace for notes, docs, projects, and wikis.", descriptionZh: "集笔记、文档、项目和知识库于一体的一站式工作空间。", websiteUrl: "https://www.notion.so", logoUrl: "", developer: "Notion Labs", founded: "2016", platforms: "Web,iOS,Android,Desktop", categorySlug: "productivity", tagNames: ["productivity", "writing"], pricingModel: "freemium", minPrice: 10, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["个人使用", "无限页面", "协作（最多10人）"] }, { name: "Plus", nameZh: "Plus", price: 10, billingCycle: "monthly", isPopular: true, features: ["无限协作", "30天历史", "高级权限"] }] },
+      { name: "Mem", nameZh: "Mem", slug: "mem", description: "AI note-taking app that auto-organizes and connects your notes.", descriptionZh: "自动整理和关联笔记的 AI 笔记应用。", websiteUrl: "https://www.mem.ai", logoUrl: "", developer: "Mem Labs", founded: "2020", platforms: "Web,iOS", categorySlug: "productivity", tagNames: ["productivity", "writing"], pricingModel: "freemium", minPrice: 14, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["基础笔记", "AI搜索"] }, { name: "Mem Prime", nameZh: "Mem Prime", price: 14, billingCycle: "monthly", isPopular: true, features: ["无限存储", "AI自动整理", "高级搜索"] }] },
+      { name: "Motion", nameZh: "Motion", slug: "motion", description: "AI calendar and project management that auto-schedules your day.", descriptionZh: "自动安排你一天时间的 AI 日历和项目管理工具。", websiteUrl: "https://www.usemotion.com", logoUrl: "", developer: "Motion", founded: "2020", platforms: "Web,iOS,Android,Chrome", categorySlug: "productivity", tagNames: ["productivity", "enterprise"], pricingModel: "paid", minPrice: 34, plans: [{ name: "Individual", nameZh: "个人版", price: 34, billingCycle: "monthly", features: ["AI日历", "任务管理", "自动调度"] }, { name: "Team", nameZh: "团队版", price: 12, billingCycle: "monthly", isPopular: true, features: ["团队协作", "项目管理", "分析报告"] }] },
+      { name: "Taskade", nameZh: "Taskade", slug: "taskade", description: "AI-powered task manager and team collaboration platform.", descriptionZh: "AI 驱动的任务管理和团队协作平台。", websiteUrl: "https://www.taskade.com", logoUrl: "", developer: "Taskade", founded: "2017", platforms: "Web,iOS,Android,Chrome", categorySlug: "productivity", tagNames: ["productivity", "free-tier"], pricingModel: "freemium", minPrice: 0, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["最多3人", "基础AI", "1000个任务"] }, { name: "Pro", nameZh: "Pro", price: 8, billingCycle: "monthly", isPopular: true, features: ["无限AI", "无限任务", "自定义模板"] }] },
+      { name: "Fireflies", nameZh: "Fireflies", slug: "fireflies", description: "AI meeting assistant that records, transcribes, and summarizes meetings.", descriptionZh: "记录、转录和总结会议的 AI 会议助手。", websiteUrl: "https://fireflies.ai", logoUrl: "", developer: "Fireflies AI", founded: "2016", platforms: "Web,Chrome,Zoom,Meet", categorySlug: "productivity", tagNames: ["productivity", "audio-gen"], pricingModel: "freemium", minPrice: 10, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["每月800分钟", "3次音频上传", "无限转录"] }, { name: "Pro", nameZh: "Pro", price: 10, billingCycle: "monthly", isPopular: true, features: ["无限分钟", "无限上传", "AI摘要", "API"] }] },
+      { name: "Copy.ai", nameZh: "Copy.ai", slug: "copy-ai", description: "AI copywriting tool for marketing teams to generate campaigns fast.", descriptionZh: "帮助营销团队快速生成活动的 AI 文案写作工具。", websiteUrl: "https://www.copy.ai", logoUrl: "", developer: "Copy.ai", founded: "2020", platforms: "Web", categorySlug: "marketing", tagNames: ["marketing", "writing"], pricingModel: "freemium", minPrice: 36, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["2000字/月", "基础模板"] }, { name: "Pro", nameZh: "Pro", price: 36, billingCycle: "monthly", isPopular: true, features: ["无限字数", "多语言", "品牌声音"] }] },
+      { name: "Surfer SEO", nameZh: "Surfer SEO", slug: "surfer-seo", description: "AI-powered SEO tool for content optimization and keyword research.", descriptionZh: "用于内容优化和关键词研究的 AI 驱动的 SEO 工具。", websiteUrl: "https://surferseo.com", logoUrl: "", developer: "Surfer", founded: "2014", platforms: "Web,Chrome", categorySlug: "marketing", tagNames: ["marketing", "data-analysis"], pricingModel: "paid", minPrice: 69, plans: [{ name: "Essential", nameZh: "基础版", price: 69, billingCycle: "monthly", features: ["1人", "30查询/月", "内容编辑器"] }, { name: "Advanced", nameZh: "高级版", price: 149, billingCycle: "monthly", isPopular: true, features: ["3人", "无限查询", "白标报告"] }] },
+      { name: "HubSpot AI", nameZh: "HubSpot AI", slug: "hubspot-ai", description: "AI features embedded across HubSpot's CRM and marketing platform.", descriptionZh: "嵌入 HubSpot CRM 和营销平台的 AI 功能。", websiteUrl: "https://www.hubspot.com", logoUrl: "", developer: "HubSpot", founded: "2006", platforms: "Web,iOS,Android", categorySlug: "marketing", tagNames: ["marketing", "enterprise"], pricingModel: "freemium", minPrice: 20, plans: [{ name: "Free Tools", nameZh: "免费工具", price: 0, billingCycle: "monthly", features: ["CRM", "邮件营销", "基础报告"] }, { name: "Starter", nameZh: "入门版", price: 20, billingCycle: "monthly", isPopular: true, features: ["营销中心", "自动化", "AI助手"] }] },
+      { name: "Ahrefs", nameZh: "Ahrefs", slug: "ahrefs", description: "SEO and competitive analysis toolset with AI-powered content ideas.", descriptionZh: "带 AI 内容创意的 SEO 和竞品分析工具套件。", websiteUrl: "https://ahrefs.com", logoUrl: "", developer: "Ahrefs", founded: "2010", platforms: "Web", categorySlug: "marketing", tagNames: ["marketing", "data-analysis"], pricingModel: "paid", minPrice: 99, plans: [{ name: "Lite", nameZh: "Lite", price: 99, billingCycle: "monthly", features: ["5个项目", "基础报告"] }, { name: "Standard", nameZh: "标准版", price: 199, billingCycle: "monthly", isPopular: true, features: ["20个项目", "内容探索", "AI关键词"] }] },
+      { name: "Julius", nameZh: "Julius", slug: "julius", description: "AI data analyst that connects to your data and generates insights.", descriptionZh: "连接你的数据并生成洞察的 AI 数据分析师。", websiteUrl: "https://julius.ai", logoUrl: "", developer: "Julius AI", founded: "2023", platforms: "Web", categorySlug: "data-analysis", tagNames: ["data-analysis", "free-tier"], pricingModel: "freemium", minPrice: 20, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["每月15消息", "基础模型"] }, { name: "Pro", nameZh: "Pro", price: 20, billingCycle: "monthly", isPopular: true, features: ["无限消息", "高级模型", "数据连接"] }] },
+      { name: "Tableau GPT", nameZh: "Tableau GPT", slug: "tableau-gpt", description: "AI-enhanced BI platform for data visualization and analytics.", descriptionZh: "增强 AI 的商业智能平台，用于数据可视化和分析。", websiteUrl: "https://www.tableau.com", logoUrl: "", developer: "Salesforce", founded: "2003", platforms: "Web,Desktop", categorySlug: "data-analysis", tagNames: ["data-analysis", "enterprise"], pricingModel: "paid", minPrice: 35, plans: [{ name: "Creator", nameZh: "创作者", price: 35, billingCycle: "monthly", features: ["Tableau Desktop", "Web制作", "AI助手"] }, { name: "Explorer", nameZh: "浏览者", price: 12, billingCycle: "monthly", isPopular: true, features: ["Web浏览", "交互式仪表板", "AI见解"] }] },
+      { name: "MonkeyLearn", nameZh: "MonkeyLearn", slug: "monkeylearn", description: "No-code AI platform for text analysis and data visualization.", descriptionZh: "用于文本分析和数据可视化的无代码 AI 平台。", websiteUrl: "https://monkeylearn.com", logoUrl: "", developer: "MonkeyLearn", founded: "2014", platforms: "Web,API", categorySlug: "data-analysis", tagNames: ["data-analysis", "api"], pricingModel: "freemium", minPrice: 29, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["100次调用/月", "基础模型"] }, { name: "Basic", nameZh: "基础版", price: 29, billingCycle: "monthly", isPopular: true, features: ["10,000次调用", "无代码界面", "导出"] }] },
+      { name: "Polymer Search", nameZh: "Polymer Search", slug: "polymer-search", description: "AI-powered data analysis and visualization platform, no coding needed.", descriptionZh: "无需编码的 AI 数据分析和可视化平台。", websiteUrl: "https://www.polymersearch.com", logoUrl: "", developer: "Polymer", founded: "2020", platforms: "Web", categorySlug: "data-analysis", tagNames: ["data-analysis", "free-tier"], pricingModel: "freemium", minPrice: 0, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["1数据集", "基础AI"] }, { name: "Pro", nameZh: "Pro", price: 20, billingCycle: "monthly", isPopular: true, features: ["无限数据集", "高级AI", "团队协作"] }] },
+      { name: "Akkio", nameZh: "Akkio", slug: "akkio", description: "No-code AI platform for marketing data analysis and forecasting.", descriptionZh: "用于营销数据分析和预测的无代码 AI 平台。", websiteUrl: "https://www.akkio.com", logoUrl: "", developer: "Akkio Inc.", founded: "2020", platforms: "Web", categorySlug: "data-analysis", tagNames: ["data-analysis", "marketing"], pricingModel: "paid", minPrice: 50, plans: [{ name: "Growth", nameZh: "增长版", price: 50, billingCycle: "monthly", features: ["3个数据集", "基础预测"] }, { name: "Pro", nameZh: "Pro", price: 100, billingCycle: "monthly", isPopular: true, features: ["无限数据集", "高级AI", "API访问"] }] },
+      { name: "Khanmigo", nameZh: "Khanmigo", slug: "khanmigo", description: "AI tutor by Khan Academy that helps students learn at their own pace.", descriptionZh: "可汗学院推出的 AI 导师，帮助学生按自己的节奏学习。", websiteUrl: "https://www.khanacademy.org/khan-labs", logoUrl: "", developer: "Khan Academy", founded: "2023", platforms: "Web", categorySlug: "education", tagNames: ["education", "free-tier"], pricingModel: "freemium", minPrice: 0, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["基础练习", "有限AI辅导"] }, { name: "Khanmigo", nameZh: "Khanmigo", price: 4, billingCycle: "monthly", isPopular: true, features: ["无限AI辅导", "个性化学习路径", "教师工具"] }] },
+      { name: "Duolingo Max", nameZh: "Duolingo Max", slug: "duolingo-max", description: "AI-enhanced language learning with Explain My Answer and Roleplay.", descriptionZh: "具备'解释答案'和'角色扮演'功能的 AI 增强语言学习。", websiteUrl: "https://www.duolingo.com", logoUrl: "", developer: "Duolingo", founded: "2011", platforms: "iOS,Android,Web", categorySlug: "education", tagNames: ["education", "free-tier"], pricingModel: "freemium", minPrice: 7, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["基础课程", "广告支持"] }, { name: "Super", nameZh: "Super", price: 7, billingCycle: "monthly", isPopular: true, features: ["无广告", "无限心心", "AI对话"] }] },
+      { name: "Quizlet", nameZh: "Quizlet", slug: "quizlet", description: "AI study tools including flashcards, practice tests, and expert solutions.", descriptionZh: "包含闪卡、练习测试和专家解答的 AI 学习工具。", websiteUrl: "https://quizlet.com", logoUrl: "", developer: "Quizlet", founded: "2005", platforms: "Web,iOS,Android", categorySlug: "education", tagNames: ["education", "free-tier"], pricingModel: "freemium", minPrice: 8, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["基础闪卡", "有限AI"] }, { name: "Quizlet Plus", nameZh: "Quizlet Plus", price: 8, billingCycle: "monthly", isPopular: true, features: ["AI导师", "专家解答", "无广告"] }] },
+      { name: "Curipod", nameZh: "Curipod", slug: "curipod", description: "AI presentation tool for teachers to create engaging lessons instantly.", descriptionZh: "帮助教师即时创建引人入胜课程的 AI 演示工具。", websiteUrl: "https://curipod.com", logoUrl: "", developer: "Curipod", founded: "2022", platforms: "Web", categorySlug: "education", tagNames: ["education", "productivity"], pricingModel: "freemium", minPrice: 0, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["基础课程", "5学生/课"] }, { name: "School", nameZh: "学校版", price: 7, billingCycle: "monthly", isPopular: true, features: ["无限学生", "AI反馈", "LMS集成"] }] },
+      { name: "Gradescope", nameZh: "Gradescope", slug: "gradescope", description: "AI-assisted grading platform for STEM assignments and exams.", descriptionZh: "用于 STEM 作业和考试的 AI 辅助评分平台。", websiteUrl: "https://www.gradescope.com", logoUrl: "", developer: "Gradescope (Turnitin)", founded: "2014", platforms: "Web", categorySlug: "education", tagNames: ["education", "enterprise"], pricingModel: "freemium", minPrice: 0, plans: [{ name: "Free for Students", nameZh: "学生免费", price: 0, billingCycle: "monthly", features: ["学生提交", "基础评分"] }, { name: "Institution", nameZh: "机构版", price: 0, billingCycle: "annual", isPopular: true, features: ["无限课程", "AI辅助评分", "LMS集成"] }] },
+      { name: "Figma AI", nameZh: "Figma AI", slug: "figma-ai", description: "AI features in Figma for design ideation, prototyping, and asset generation.", descriptionZh: "Figma 中的 AI 功能，用于设计构思、原型制作和素材生成。", websiteUrl: "https://www.figma.com", logoUrl: "", developer: "Figma (Adobe)", founded: "2012", platforms: "Web,macOS,Windows,iOS", categorySlug: "design", tagNames: ["design", "productivity"], pricingModel: "freemium", minPrice: 12, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["3个Figma文件", "3个FigJam文件", "基础AI"] }, { name: "Professional", nameZh: "专业版", price: 12, billingCycle: "monthly", isPopular: true, features: ["无限文件", "高级AI", "版本历史"] }] },
+      { name: "Galileo AI", nameZh: "Galileo AI", slug: "galileo-ai", description: "AI tool that creates editable UI designs from text descriptions.", descriptionZh: "从文本描述创建可编辑 UI 设计的 AI 工具。", websiteUrl: "https://www.usegalileo.ai", logoUrl: "", developer: "Galileo AI", founded: "2023", platforms: "Web", categorySlug: "design", tagNames: ["design", "coding"], pricingModel: "freemium", minPrice: 15, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["每月20次生成", "基础编辑"] }, { name: "Pro", nameZh: "Pro", price: 15, billingCycle: "monthly", isPopular: true, features: ["无限生成", "Figma导出", "高级模型"] }] },
+      { name: "Uizard", nameZh: "Uizard", slug: "uizard", description: "AI design tool that turns sketches into wireframes and prototypes.", descriptionZh: "将草图转化为线框图和原型的 AI 设计工具。", websiteUrl: "https://uizard.io", logoUrl: "", developer: "Uizard Technologies", founded: "2018", platforms: "Web,iOS", categorySlug: "design", tagNames: ["design", "free-tier"], pricingModel: "freemium", minPrice: 12, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["1个项目", "基础AI"] }, { name: "Pro", nameZh: "Pro", price: 12, billingCycle: "monthly", isPopular: true, features: ["无限项目", "高级AI", "Figma插件"] }] },
+      { name: "Canva AI", nameZh: "Canva AI", slug: "canva-ai", description: "AI-powered design platform with Magic Studio for image and video generation.", descriptionZh: "配备 Magic Studio 的 AI 驱动设计平台，支持图像和视频生成。", websiteUrl: "https://www.canva.com", logoUrl: "", developer: "Canva", founded: "2013", platforms: "Web,iOS,Android", categorySlug: "design", tagNames: ["design", "free-tier"], pricingModel: "freemium", minPrice: 15, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["基础设计", "有限AI"] }, { name: "Pro", nameZh: "Pro", price: 15, billingCycle: "monthly", isPopular: true, features: ["Magic Studio", "品牌工具包", "无限素材"] }] },
+      { name: "v0.dev", nameZh: "v0.dev", slug: "v0-dev", description: "Vercel's AI tool for generating UI components from text prompts.", descriptionZh: "Vercel 的 AI 工具，从文本提示词生成 UI 组件。", websiteUrl: "https://v0.dev", logoUrl: "", developer: "Vercel", founded: "2023", platforms: "Web", categorySlug: "design", tagNames: ["design", "coding"], pricingModel: "freemium", minPrice: 20, plans: [{ name: "Free", nameZh: "免费版", price: 0, billingCycle: "monthly", features: ["每月50次生成", "公开生成"] }, { name: "Premium", nameZh: "高级版", price: 20, billingCycle: "monthly", isPopular: true, features: ["无限生成", "私有生成", "团队合作"] }] },
     ];
 
     let count = 0;
     for (const t of tools) {
-      const toolData: any = {
-        id: `tool-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        name: t.name,
-        nameZh: t.nameZh,
-        slug: t.slug,
-        description: t.description,
-        descriptionZh: t.descriptionZh,
-        websiteUrl: t.websiteUrl,
-        logoUrl: t.logoUrl,
-        developer: t.developer,
-        founded: t.founded,
-        platforms: t.platforms,
-        pricingModel: t.pricingModel,
-        minPrice: t.minPrice,
-        isFeatured: t.isFeatured || false,
-        categoryId: catMap[t.categorySlug],
-        updatedAt: new Date(),
-      };
-
+      const toolData: any = { id: `tool-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, name: t.name, nameZh: t.nameZh, slug: t.slug, description: t.description, descriptionZh: t.descriptionZh, websiteUrl: t.websiteUrl, logoUrl: t.logoUrl, developer: t.developer, founded: t.founded, platforms: t.platforms, pricingModel: t.pricingModel, minPrice: t.minPrice, isFeatured: t.isFeatured || false, categoryId: catMap[t.categorySlug], updatedAt: new Date() };
       const createdTool = await prisma.tools.create({ data: toolData });
-
-      // 创建标签关联
-      for (const tagName of t.tagNames || []) {
-        if (tagMap[tagName]) {
-          await prisma.tag_on_tool.create({
-            data: { toolId: createdTool.id, tagId: tagMap[tagName] },
-          });
-        }
-      }
-
-      // 创建定价方案
-      if (t.plans && t.plans.length > 0) {
-        for (const p of t.plans as any[]) {
-          await prisma.pricing_plans.create({
-            data: {
-              id: `plan-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-              toolId: createdTool.id,
-              name: p.name,
-              price: p.price,
-              billingCycle: p.billingCycle,
-              isPopular: p.isPopular || false,
-              featuresJson: JSON.stringify(p.features || []),
-            },
-          });
-        }
-      }
+      for (const tagName of t.tagNames || []) { if (tagMap[tagName]) await prisma.tag_on_tool.create({ data: { toolId: createdTool.id, tagId: tagMap[tagName] } }); }
+      if (t.plans && t.plans.length > 0) { for (const p of t.plans as any[]) { await prisma.pricing_plans.create({ data: { id: `plan-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, toolId: createdTool.id, name: p.name, price: p.price, billingCycle: p.billingCycle, isPopular: p.isPopular || false, featuresJson: JSON.stringify(p.features || []) } }); } }
+      if (t.promoCode) { await prisma.promo_codes.create({ data: { id: `promo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, toolId: createdTool.id, code: (t.promoCode as any).code, discount: (t.promoCode as any).discount, expiresAt: new Date((t.promoCode as any).expiresAt), isVerified: true } }); }
       count++;
     }
 
-    return NextResponse.json({
-      success: true,
-      message: "Seed completed!",
-      data: {
-        categories: categories.length,
-        tags: tags.length,
-        tools: count,
-      },
-    });
-  } catch (error) {
+    return NextResponse.json({ success: true, message: "Seed completed!", data: { categories: categories.length, tags: tags.length, tools: count } });
+  } catch (error: any) {
     console.error("Seed error:", error);
-    return NextResponse.json({ error: "Seed failed", details: error }, { status: 500 });
+    return NextResponse.json({ error: "Seed failed", details: error.message }, { status: 500 });
   }
 }
