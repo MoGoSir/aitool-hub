@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import ToolCard from "@/components/ToolCard";
 import ToolListClient from "./ToolListClient";
+import AdSense from "@/components/AdSense";
 
 export default async function ToolsPage({
   searchParams,
@@ -61,6 +62,11 @@ export default async function ToolsPage({
         </p>
       </div>
 
+      {/* Top Ad */}
+      <div className="mb-8 flex justify-center">
+        <AdSense adSlot="1234567890" adFormat="horizontal" className="max-w-full" />
+      </div>
+
       <ToolListClient
         categories={categories}
         tags={tags}
@@ -87,6 +93,13 @@ export default async function ToolsPage({
           >
             清除筛选 / Clear Filters
           </Link>
+        </div>
+      )}
+
+      {/* Middle Ad */}
+      {tools.length > 6 && (
+        <div className="my-8 flex justify-center">
+          <AdSense adSlot="0987654321" adFormat="auto" className="max-w-full" />
         </div>
       )}
 
@@ -120,6 +133,11 @@ export default async function ToolsPage({
           )}
         </div>
       )}
+
+      {/* Bottom Ad */}
+      <div className="mt-8 flex justify-center">
+        <AdSense adSlot="1122334455" adFormat="auto" className="max-w-full" />
+      </div>
     </div>
   );
 }

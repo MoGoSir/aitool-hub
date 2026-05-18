@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import ToolCard from "@/components/ToolCard";
+import AdSense from "@/components/AdSense";
 
 export default async function ToolDetailPage({
   params,
@@ -196,6 +197,11 @@ export default async function ToolDetailPage({
         </div>
       </div>
 
+      {/* Ad After Tool Header */}
+      <div className="mt-8 flex justify-center">
+        <AdSense adSlot="TOOL_DETAIL_AD_SLOT_1" adFormat="horizontal" className="max-w-full" />
+      </div>
+
       {/* Pricing Plans */}
       {tool.pricing_plans.length > 0 && (
         <section className="mt-16">
@@ -300,6 +306,11 @@ export default async function ToolDetailPage({
           </div>
         </section>
       )}
+
+      {/* Ad Before Related Tools */}
+      <div className="my-8 flex justify-center">
+        <AdSense adSlot="TOOL_DETAIL_AD_SLOT_2" adFormat="auto" className="max-w-full" />
+      </div>
 
       {/* Related Tools */}
       {relatedTools.length > 0 && (

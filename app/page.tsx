@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import ToolCard from "@/components/ToolCard";
+import AdSense from "@/components/AdSense";
 
 export default async function HomePage() {
   const [categories, toolCount, featuredTools, recentTools] = await Promise.all([
@@ -95,6 +96,11 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Ad After Hero */}
+      <div className="mx-auto max-w-[1200px] px-6 py-4">
+        <AdSense adSlot="YOUR_AD_SLOT_ID_HERE" adFormat="horizontal" className="max-w-full" />
+      </div>
+
       {/* Stats Bar */}
       <section className="border-y border-gray-200 bg-gray-50 py-8 dark:border-gray-700 dark:bg-gray-800/50">
         <div className="mx-auto flex max-w-[1200px] items-center justify-center gap-12 px-6">
@@ -185,6 +191,11 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Ad After Featured Tools */}
+      <div className="mx-auto max-w-[1200px] px-6 py-8">
+        <AdSense adSlot="ANOTHER_AD_SLOT_ID_HERE" adFormat="auto" className="max-w-full" />
+      </div>
 
       {/* CTA Section */}
       <section className="border-t border-gray-200 bg-gray-50 py-16 dark:border-gray-700 dark:bg-gray-800/50">
