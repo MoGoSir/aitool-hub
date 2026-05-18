@@ -3,6 +3,11 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+// Support both GET and POST for easier triggering
+export async function GET() {
+  return POST();
+}
+
 export async function POST() {
   try {
     // 清空现有数据

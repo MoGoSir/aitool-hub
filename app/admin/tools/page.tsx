@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import AdminLayoutWrapper from "../AdminLayoutWrapper";
@@ -16,23 +16,20 @@ interface Tool {
   categories: { name: string };
 }
 
-async function fetchTools(): Promise<Tool[]> {
-  const res = await fetch("/api/admin/tools");
-  return res.json();
-}
-
 export default function AdminToolsPage() {
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
-  useState(() => {
-    fetchTools().then((data) => {
-      setTools(data);
-      setLoading(false);
-    });
-  });
+  useEffect(() => {
+    fetch("/api/admin/tools")
+      .then((res) => res.json())
+      .then((data) => {
+        setTools(data);
+        setLoading(false);
+      });
+  }, []);
 
   const handleDelete = async (id: string, name: string) => {
     setDeletingId(id);
