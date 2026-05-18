@@ -26,6 +26,56 @@ interface ToolCardProps {
   };
 }
 
+const getDefaultIcon = (name: string): string => {
+  const iconMap: Record<string, string> = {
+    "ChatGPT": "🤖",
+    "Claude": "🦜",
+    "Notion AI": "📝",
+    "Jasper": "✍️",
+    "Grammarly": "✅",
+    "GitHub Copilot": "✈️",
+    "Cursor": "💻",
+    "Replit": "🔄",
+    "Midjourney": "🎨",
+    "DALL-E 3": "🖼️",
+    "Stable Diffusion": "✨",
+    "Leonardo.ai": "🎭",
+    "RunwayML": "🎬",
+    "Sora": "🌌",
+    "HeyGen": "🎥",
+    "Synthesia": "👤",
+    "Pika": "🐰",
+    "CapCut": "✂️",
+    "ElevenLabs": "🔊",
+    "Descript": "📝",
+    "Murf": "🎙️",
+    "Suno": "🎵",
+    "Notion": "📚",
+    "Mem": "🧠",
+    "Motion": "⏰",
+    "Taskade": "✅",
+    "Fireflies": "✨",
+    "Copy.ai": "📄",
+    "Surfer SEO": "🌊",
+    "HubSpot AI": "📊",
+    "Ahrefs": "🔍",
+    "Tableau GPT": "📈",
+    "MonkeyLearn": "🐒",
+    "Polymer Search": "🔍",
+    "Akkio": "🤖",
+    "Khanmigo": "🎓",
+    "Duolingo Max": "🌍",
+    "Quizlet": "📚",
+    "Curipod": "🎯",
+    "Figma AI": "🎨",
+    "Galileo AI": "🔭",
+    "Uizard": "🧙",
+    "Canva AI": "🎨",
+    "v0.dev": "⚡",
+  };
+  return iconMap[name] || "🚀";
+};
+
 export default function ToolCard({ tool }: ToolCardProps) {
   const [logoError, setLogoError] = useState(false);
 
@@ -45,16 +95,17 @@ export default function ToolCard({ tool }: ToolCardProps) {
       className="group relative flex flex-col rounded-xl border border-gray-200 bg-white p-4 transition-all hover:border-indigo-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-indigo-600"
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-gray-50 text-2xl dark:bg-gray-700">
+        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-50 to-purple-50 text-2xl shadow-sm dark:from-gray-700 dark:to-gray-600">
           {tool.logoUrl && !logoError ? (
             <img
               src={tool.logoUrl}
               alt={displayName}
-              className="h-8 w-8 rounded object-contain"
+              className="h-8 w-8 rounded object-contain bg-white p-0.5 dark:bg-gray-800"
               onError={() => setLogoError(true)}
+              loading="lazy"
             />
           ) : (
-            "🤖"
+            <span className="drop-shadow-sm">{getDefaultIcon(displayName)}</span>
           )}
         </div>
         <div className="flex-1 min-w-0">

@@ -1,15 +1,69 @@
+"use client";
+
+import { useState } from "react";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import AdminLayoutWrapper from "../AdminLayoutWrapper";
 
-export default async function AdminToolsPage() {
-  const tools = await prisma.tools.findMany({
-    include: {
-      categories: true,
-      _count: { select: { pricing_plans: true } },
-    },
-    orderBy: { createdAt: "desc" },
+interface Tool {
+  id: string;
+  name: string;
+  slug: string;
+  logoUrl: string | null;
+  minPrice: number | null;
+  isFeatured: boolean;
+  isVerified: boolean;
+  categories: { name: string };
+}
+
+async function fetchTools(): Promise<Tool[]> {
+  const res = await fetch("/api/admin/tools");
+  return res.json();
+}
+
+export default function AdminToolsPage() {
+  const [tools, setTools] = useState<Tool[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
+  useState(() => {
+    fetchTools().then((data) => {
+      setTools(data);
+      setLoading(false);
+    });
   });
+
+  const handleDelete = async (id: string, name: string) => {
+    setDeletingId(id);
+    
+    try {
+      const res = await fetch(`/api/admin/tools/${id}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        setTools(tools.filter((tool) => tool.id !== id));
+      } else {
+        console.error("Failed to delete tool");
+      }
+    } catch (error) {
+      console.error("Error deleting tool:", error);
+    } finally {
+      setDeletingId(null);
+      setConfirmDelete(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <AdminLayoutWrapper>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+        </div>
+      </AdminLayoutWrapper>
+    );
+  }
 
   return (
     <AdminLayoutWrapper>
@@ -121,6 +175,30 @@ export default async function AdminToolsPage() {
                         >
                           预览
                         </Link>
+                        {confirmDelete === tool.id ? (
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleDelete(tool.id, tool.name)}
+                              disabled={deletingId === tool.id}
+                              className="text-red-600 hover:text-red-700 dark:text-red-400 text-sm disabled:opacity-50"
+                            >
+                              {deletingId === tool.id ? "删除中..." : "确认"}
+                            </button>
+                            <button
+                              onClick={() => setConfirmDelete(null)}
+                              className="text-gray-500 hover:text-gray-600 dark:text-gray-400 text-sm"
+                            >
+                              取消
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setConfirmDelete(tool.id)}
+                            className="text-red-500 hover:text-red-600 dark:text-red-400 text-sm"
+                          >
+                            删除
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

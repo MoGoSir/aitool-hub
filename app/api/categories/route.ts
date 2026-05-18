@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
-  const categories = await prisma.category.findMany({
+  const categories = await prisma.categories.findMany({
     include: { _count: { select: { tools: true } } },
     orderBy: { name: "asc" },
   });

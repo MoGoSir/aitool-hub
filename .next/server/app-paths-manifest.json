@@ -1,7 +1,25 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/tools/page": "app/tools/page.js",
+  "/about/page": "app/about/page.js",
+  "/api/admin/login/route": "app/api/admin/login/route.js",
+  "/api/admin/check/route": "app/api/admin/check/route.js",
+  "/api/admin/submissions/[id]/route": "app/api/admin/submissions/[id]/route.js",
+  "/api/admin/tools/route": "app/api/admin/tools/route.js",
+  "/api/tools/[slug]/route": "app/api/tools/[slug]/route.js",
+  "/api/admin/tools/[id]/route": "app/api/admin/tools/[id]/route.js",
+  "/api/tags/route": "app/api/tags/route.js",
   "/api/tools/route": "app/api/tools/route.js",
+  "/page": "app/page.js",
+  "/categories/page": "app/categories/page.js",
+  "/tools/page": "app/tools/page.js",
+  "/submit/page": "app/submit/page.js",
   "/tools/[slug]/page": "app/tools/[slug]/page.js",
-  "/page": "app/page.js"
+  "/api/categories/route": "app/api/categories/route.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/admin/tools/[id]/edit/page": "app/admin/tools/[id]/edit/page.js",
+  "/admin/submissions/page": "app/admin/submissions/page.js",
+  "/admin/categories/page": "app/admin/categories/page.js",
+  "/admin/tools/new/page": "app/admin/tools/new/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/tools/page": "app/admin/tools/page.js"
 }

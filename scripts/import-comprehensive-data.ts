@@ -1006,61 +1006,60 @@ const COMPREHENSIVE_TOOLS: ComprehensiveTool[] = [
 async function main() {
   console.log('🚀 Starting comprehensive data import...\n');
 
-  await prisma.toolSubmission.deleteMany();
-  await prisma.promoCode.deleteMany();
-  await prisma.priceHistory.deleteMany();
-  await prisma.pricingPlan.deleteMany();
-  await prisma.tagOnTool.deleteMany();
-  await prisma.tool.deleteMany();
-  await prisma.category.deleteMany();
-  await prisma.tag.deleteMany();
+  await prisma.tool_submissions.deleteMany();
+  await prisma.promo_codes.deleteMany();
+  await prisma.price_history.deleteMany();
+  await prisma.pricing_plans.deleteMany();
+  await prisma.tag_on_tool.deleteMany();
+  await prisma.tools.deleteMany();
+  await prisma.categories.deleteMany();
+  await prisma.tags.deleteMany();
 
   const categories = [
-    { name: "Writing", nameZh: "写作与内容", slug: "writing", icon: "✍️", description: "AI-powered writing, copywriting, and content creation tools" },
-    { name: "Coding", nameZh: "编程与开发", slug: "coding", icon: "💻", description: "AI coding assistants, code generation, and developer tools" },
-    { name: "Image Generation", nameZh: "图像生成", slug: "image-gen", icon: "🎨", description: "Text-to-image, image editing, and visual design AI" },
-    { name: "Video & Animation", nameZh: "视频与动画", slug: "video", icon: "🎬", description: "AI video generation, editing, and post-production tools" },
-    { name: "Audio & Voice", nameZh: "音频与语音", slug: "audio", icon: "🎤", description: "Music generation, voice synthesis, and audio editing" },
-    { name: "Productivity", nameZh: "生产力与效率", slug: "productivity", icon: "⚡", description: "Workflow automation, task management, and efficiency tools" },
-    { name: "Marketing & SEO", nameZh: "营销与SEO", slug: "marketing", icon: "📈", description: "SEO optimization, content marketing, and campaign tools" },
-    { name: "Data Analysis", nameZh: "数据分析", slug: "data-analysis", icon: "📊", description: "Data visualization, analytics, and business intelligence AI" },
-    { name: "Education", nameZh: "教育与学习", slug: "education", icon: "🎓", description: "AI tutors, course creation, and learning assistants" },
-    { name: "Design & UI/UX", nameZh: "设计与UI/UX", slug: "design", icon: "🖌️", description: "AI design tools, UI/UX, and prototyping" },
+    { id: "cat-writing", name: "Writing", nameZh: "写作与内容", slug: "writing", icon: "✍️", description: "AI-powered writing, copywriting, and content creation tools" },
+    { id: "cat-coding", name: "Coding", nameZh: "编程与开发", slug: "coding", icon: "💻", description: "AI coding assistants, code generation, and developer tools" },
+    { id: "cat-image-gen", name: "Image Generation", nameZh: "图像生成", slug: "image-gen", icon: "🎨", description: "Text-to-image, image editing, and visual design AI" },
+    { id: "cat-video", name: "Video & Animation", nameZh: "视频与动画", slug: "video", icon: "🎬", description: "AI video generation, editing, and post-production tools" },
+    { id: "cat-audio", name: "Audio & Voice", nameZh: "音频与语音", slug: "audio", icon: "🎤", description: "Music generation, voice synthesis, and audio editing" },
+    { id: "cat-productivity", name: "Productivity", nameZh: "生产力与效率", slug: "productivity", icon: "⚡", description: "Workflow automation, task management, and efficiency tools" },
+    { id: "cat-marketing", name: "Marketing & SEO", nameZh: "营销与SEO", slug: "marketing", icon: "📈", description: "SEO optimization, content marketing, and campaign tools" },
+    { id: "cat-data-analysis", name: "Data Analysis", nameZh: "数据分析", slug: "data-analysis", icon: "📊", description: "Data visualization, analytics, and business intelligence AI" },
+    { id: "cat-education", name: "Education", nameZh: "教育与学习", slug: "education", icon: "🎓", description: "AI tutors, course creation, and learning assistants" },
+    { id: "cat-design", name: "Design & UI/UX", nameZh: "设计与UI/UX", slug: "design", icon: "🖌️", description: "AI design tools, UI/UX, and prototyping" },
   ];
 
   const catMap: Record<string, string> = {};
   for (const c of categories) {
-    const created = await prisma.category.create({ data: c });
+    const created = await prisma.categories.create({ data: c });
     catMap[c.slug] = created.id;
   }
 
   const tags = [
-    { name: "writing", nameZh: "写作" },
-    { name: "chat-bot", nameZh: "聊天机器人" },
-    { name: "coding", nameZh: "编程" },
-    { name: "image-gen", nameZh: "图像生成" },
-    { name: "video-gen", nameZh: "视频生成" },
-    { name: "audio-gen", nameZh: "音频生成" },
-    { name: "productivity", nameZh: "效率" },
-    { name: "marketing", nameZh: "营销" },
-    { name: "data-analysis", nameZh: "数据分析" },
-    { name: "education", nameZh: "教育" },
-    { name: "design", nameZh: "设计" },
-    { name: "api", nameZh: "API" },
-    { name: "open-source", nameZh: "开源" },
-    { name: "enterprise", nameZh: "企业级" },
-    { name: "free-tier", nameZh: "免费版" },
-    { name: "free-tier", nameZh: "免费版" },
-    { name: "creative", nameZh: "创意" },
-    { name: "text-to-video", nameZh: "文生视频" },
-    { name: "avatar", nameZh: "数字人" },
-    { name: "voice", nameZh: "语音" },
+    { id: "tag-writing", name: "writing", nameZh: "写作" },
+    { id: "tag-chat-bot", name: "chat-bot", nameZh: "聊天机器人" },
+    { id: "tag-coding", name: "coding", nameZh: "编程" },
+    { id: "tag-image-gen", name: "image-gen", nameZh: "图像生成" },
+    { id: "tag-video-gen", name: "video-gen", nameZh: "视频生成" },
+    { id: "tag-audio-gen", name: "audio-gen", nameZh: "音频生成" },
+    { id: "tag-productivity", name: "productivity", nameZh: "效率" },
+    { id: "tag-marketing", name: "marketing", nameZh: "营销" },
+    { id: "tag-data-analysis", name: "data-analysis", nameZh: "数据分析" },
+    { id: "tag-education", name: "education", nameZh: "教育" },
+    { id: "tag-design", name: "design", nameZh: "设计" },
+    { id: "tag-api", name: "api", nameZh: "API" },
+    { id: "tag-open-source", name: "open-source", nameZh: "开源" },
+    { id: "tag-enterprise", name: "enterprise", nameZh: "企业级" },
+    { id: "tag-free-tier", name: "free-tier", nameZh: "免费版" },
+    { id: "tag-creative", name: "creative", nameZh: "创意" },
+    { id: "tag-text-to-video", name: "text-to-video", nameZh: "文生视频" },
+    { id: "tag-avatar", name: "avatar", nameZh: "数字人" },
+    { id: "tag-voice", name: "voice", nameZh: "语音" },
   ];
 
   const tagMap: Record<string, string> = {};
   for (const t of tags) {
     if (!tagMap[t.name]) {
-      const created = await prisma.tag.create({ data: t });
+      const created = await prisma.tags.create({ data: t });
       tagMap[t.name] = created.id;
     }
   }
@@ -1113,7 +1112,7 @@ async function main() {
       };
     }
 
-    await prisma.tool.create({ data: toolData });
+    await prisma.tools.create({ data: toolData });
     count++;
     process.stdout.write(`\r  Creating tools: ${count}/${COMPREHENSIVE_TOOLS.length}`);
   }

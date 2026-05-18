@@ -11,7 +11,7 @@ interface Submission {
   websiteUrl: string;
   categoryName: string;
   status: string;
-  createdAt: string;
+  createdAt: Date;
 }
 
 interface SubmissionsListProps {

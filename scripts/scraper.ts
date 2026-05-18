@@ -31,14 +31,20 @@ interface AITool {
 async function fetchWithRetry(url: string, retries = 3): Promise<string | null> {
   for (let i = 0; i < retries; i++) {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       const response = await fetch(url, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
           'Accept-Language': 'en-US,en;q=0.5',
         },
-        timeout: 10000,
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
+
       if (response.ok) {
         return await response.text();
       }
@@ -99,7 +105,7 @@ export async function scrapeAITools(): Promise<AITool[]> {
 export async function saveToolsToDatabase(tools: AITool[]): Promise<number> {
   let saved = 0;
 
-  const category = await prisma.category.upsert({
+  const category = await prisma.categories.upsert({
     where: { slug: 'general' },
     update: {},
     create: {
@@ -115,7 +121,7 @@ export async function saveToolsToDatabase(tools: AITool[]): Promise<number> {
     try {
       const slug = tool.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-      await prisma.tool.upsert({
+      await prisma.tools.upsert({
         where: { slug },
         update: {
           description: tool.description,
@@ -144,6 +150,7 @@ export async function saveToolsToDatabase(tools: AITool[]): Promise<number> {
           sourceType: 'scraped',
           isVerified: false,
           isFeatured: false,
+          updatedAt: new Date(),
         },
       });
       saved++;
