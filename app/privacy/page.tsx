@@ -22,7 +22,7 @@ export default function PrivacyPage() {
           </h2>
           <p className="mt-4 text-gray-600 dark:text-gray-300 leading-relaxed">
             {isZh
-              ? "AIToolHub（以下简称"我们"或"本网站"）重视您的隐私。本隐私政策旨在帮助您了解我们如何收集、使用、存储和保护您的个人信息。通过使用本网站，即表示您同意本隐私政策中描述的做法。"
+              ? 'AIToolHub（以下简称"我们"或"本网站"）重视您的隐私。本隐私政策旨在帮助您了解我们如何收集、使用、存储和保护您的个人信息。通过使用本网站，即表示您同意本隐私政策中描述的做法。'
               : 'AIToolHub ("we," "us," or "our") values your privacy. This Privacy Policy is designed to help you understand how we collect, use, store, and protect your personal information. By using this website, you consent to the practices described in this Privacy Policy.'}
           </p>
         </section>
