@@ -24,34 +24,26 @@ MCP (Model Context Protocol) server for AIToolHub - allows LLMs to manage AI too
 | `approve_submission` | 批准工具提交 |
 | `get_stats` | 获取数据库统计信息 |
 
-## 安装
+## 方式一：本地运行（Stdio 传输）
+
+适合 Claude Desktop、Cursor 等本地 MCP 客户端。
 
 ```bash
 cd mcp-server
 npm install
 
 # 复制环境变量文件
-cp .env.example .env
+cp ../.env .env  # 或 cp ../.env.local .env
 
-# 编辑 .env 文件，填入数据库连接字符串
-```
-
-## 运行
-
-### 开发模式
-```bash
+# 开发模式
 npm run dev
-```
 
-### 生产模式
-```bash
+# 生产模式
 npm run build
 npm start
 ```
 
-## Claude Desktop 配置
-
-在 Claude Desktop 的配置文件中添加：
+### Claude Desktop 配置
 
 ```json
 {
@@ -67,11 +59,7 @@ npm start
 }
 ```
 
-## 使用示例
-
-### 通过 Cursor/Windsurf 调用
-
-在 Cursor/Windsurf 的 MCP 配置中添加：
+### Cursor/Windsurf 配置
 
 ```json
 {
@@ -87,6 +75,49 @@ npm start
 }
 ```
 
+## 方式二：Vercel 部署（Streamable HTTP 传输）
+
+适合远程调用，其他大模型可通过 HTTP 访问。
+
+### 1. API 路由已内置
+
+MCP API 路由位于 `app/api/mcp/route.ts`，使用 Web Standard Streamable HTTP 传输，完全兼容 Vercel Serverless。
+
+### 2. 部署到 Vercel
+
+部署主项目即可自动包含 MCP API：
+
+```bash
+cd /path/to/AITOOL-WEB
+git push origin main
+```
+
+Vercel 会自动检测 Next.js 项目并部署，MCP 端点将可用在：
+
+```
+https://your-domain.vercel.app/api/mcp
+```
+
+### 3. 配置环境变量
+
+在 Vercel 项目设置中确保 `DATABASE_URL` 已配置（通常自动同步自 .env.production）。
+
+### 4. 远程 MCP 客户端配置
+
+在支持远程 MCP 的客户端中配置：
+
+```json
+{
+  "mcpServers": {
+    "aitoolhub": {
+      "url": "https://your-domain.vercel.app/api/mcp"
+    }
+  }
+}
+```
+
+## 使用示例
+
 ### 定时更新工具内容
 
 你可以让大模型定期调用 MCP 服务来：
@@ -99,3 +130,12 @@ npm start
 ## 数据库
 
 MCP 服务复用主项目的 Prisma 数据库配置。确保 `.env` 中的 `DATABASE_URL` 与主项目一致。
+
+## 传输协议对比
+
+| 特性 | Stdio（本地） | Streamable HTTP（Vercel） |
+|------|--------------|--------------------------|
+| 运行方式 | 本地进程 | HTTP 端点 |
+| 适合场景 | 本地开发、Claude Desktop | 远程部署、多客户端 |
+| 部署平台 | 本地机器 | Vercel、任何 HTTP 服务器 |
+| 会话管理 | 进程生命周期 | 基于 Session ID |
