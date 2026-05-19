@@ -61,7 +61,7 @@ export default function Footer() {
               <li><Link href="/about" className="hover:text-indigo-600">{isZh ? "关于我们" : "About Us"}</Link></li>
               <li><Link href="/privacy" className="hover:text-indigo-600">{isZh ? "隐私政策" : "Privacy Policy"}</Link></li>
               <li><Link href="/terms" className="hover:text-indigo-600">{isZh ? "服务条款" : "Terms of Service"}</Link></li>
-              <li><Link href="/contact" className="hover:text-indigo-600">{isZh ? "联系我们" : "Contact Us"}</Link></li>
+              <li><Link href="/about" className="hover:text-indigo-600">{isZh ? "联系我们" : "Contact Us"}</Link></li>
             </ul>
           </div>
         </div>
