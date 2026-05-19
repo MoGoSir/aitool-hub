@@ -52,10 +52,10 @@ export default function Footer() {
               关于 / Company
             </h4>
             <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-              <li><a href="/about.html" className="hover:text-indigo-600">关于我们</a></li>
-              <li><a href="#" className="hover:text-indigo-600">隐私政策</a></li>
-              <li><a href="#" className="hover:text-indigo-600">服务条款</a></li>
-              <li><a href="#" className="hover:text-indigo-600">联系我们</a></li>
+              <li><Link href="/about" className="hover:text-indigo-600">关于我们</Link></li>
+              <li><Link href="/privacy" className="hover:text-indigo-600">隐私政策</Link></li>
+              <li><Link href="/terms" className="hover:text-indigo-600">服务条款</Link></li>
+              <li><Link href="/contact" className="hover:text-indigo-600">联系我们</Link></li>
             </ul>
           </div>
         </div>
