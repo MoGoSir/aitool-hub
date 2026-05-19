@@ -40,20 +40,20 @@ export default function Header() {
             {language === "zh" ? "分类" : "Categories"}
           </Link>
           <Link
-            href="/submit"
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-          >
-            {language === "zh" ? "提交工具" : "Submit"}
-          </Link>
-          <Link
             href="/about"
             className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
           >
             {language === "zh" ? "关于" : "About"}
           </Link>
           <Link
+            href="/submit"
+            className="rounded-lg px-3 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+          >
+            {language === "zh" ? "提交工具" : "Submit"}
+          </Link>
+          <Link
             href="/admin"
-            className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+            className="rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-gray-800"
           >
             {language === "zh" ? "管理" : "Admin"}
           </Link>
