@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { useState } from "react";
+import { useLanguage } from "@/lib/LanguageContext";
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
-  const [lang, setLang] = useState<"zh" | "en">("zh");
+  const { language, setLanguage } = useLanguage();
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur dark:border-gray-700 dark:bg-gray-900/90">
@@ -25,45 +25,45 @@ export default function Header() {
             href="/"
             className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
           >
-            {lang === "zh" ? "首页" : "Home"}
+            {language === "zh" ? "首页" : "Home"}
           </Link>
           <Link
             href="/tools"
             className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
           >
-            {lang === "zh" ? "工具库" : "Tools"}
+            {language === "zh" ? "工具库" : "Tools"}
           </Link>
           <Link
             href="/categories"
             className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
           >
-            {lang === "zh" ? "分类" : "Categories"}
+            {language === "zh" ? "分类" : "Categories"}
           </Link>
           <Link
             href="/submit"
             className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
           >
-            {lang === "zh" ? "提交工具" : "Submit"}
+            {language === "zh" ? "提交工具" : "Submit"}
           </Link>
           <Link
             href="/about"
             className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
           >
-            {lang === "zh" ? "关于" : "About"}
+            {language === "zh" ? "关于" : "About"}
           </Link>
           <Link
             href="/admin"
             className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
           >
-            {lang === "zh" ? "管理" : "Admin"}
+            {language === "zh" ? "管理" : "Admin"}
           </Link>
 
           {/* Language Toggle */}
           <button
-            onClick={() => setLang(lang === "zh" ? "en" : "zh")}
+            onClick={() => setLanguage(language === "zh" ? "en" : "zh")}
             className="rounded-lg px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
           >
-            {lang === "zh" ? "EN" : "中"}
+            {language === "zh" ? "EN" : "中文"}
           </button>
 
           {/* Theme Toggle */}

@@ -2,10 +2,12 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { useLanguage } from "@/lib/LanguageContext";
 
 interface Category {
   id: string;
   name: string;
+  nameZh: string | null;
   icon: string | null;
 }
 
@@ -32,15 +34,25 @@ export default function ToolListClient({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { language } = useLanguage();
+  const isZh = language === 'zh';
   const [search, setSearch] = useState(currentSearch);
 
-  const pricingModels = [
-    { value: "", label: "All Pricing" },
-    { value: "free", label: "Free" },
-    { value: "freemium", label: "Freemium" },
-    { value: "paid", label: "Paid" },
-    { value: "enterprise", label: "Enterprise" },
-  ];
+  const pricingModels = isZh
+    ? [
+        { value: "", label: "全部定价" },
+        { value: "free", label: "免费" },
+        { value: "freemium", label: "免费增值" },
+        { value: "paid", label: "付费" },
+        { value: "enterprise", label: "企业版" },
+      ]
+    : [
+        { value: "", label: "All Pricing" },
+        { value: "free", label: "Free" },
+        { value: "freemium", label: "Freemium" },
+        { value: "paid", label: "Paid" },
+        { value: "enterprise", label: "Enterprise" },
+      ];
 
   function updateParams(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -66,14 +78,14 @@ export default function ToolListClient({
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="搜索工具... / Search tools..."
+          placeholder={isZh ? '搜索工具...' : 'Search tools...'}
           className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm text-gray-900 outline-none focus:border-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
         />
         <button
           type="submit"
           className="rounded-lg bg-indigo-600 px-6 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
-          搜索
+          {isZh ? '搜索' : 'Search'}
         </button>
       </form>
 
@@ -85,10 +97,10 @@ export default function ToolListClient({
           onChange={(e) => updateParams("category", e.target.value)}
           className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
         >
-          <option value="">All Categories</option>
+          <option value="">{isZh ? '全部分类' : 'All Categories'}</option>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>
-              {cat.icon} {cat.name}
+              {cat.icon} {isZh && cat.nameZh ? cat.nameZh : cat.name}
             </option>
           ))}
         </select>
@@ -112,10 +124,10 @@ export default function ToolListClient({
           onChange={(e) => updateParams("tag", e.target.value)}
           className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
         >
-          <option value="">All Tags</option>
+          <option value="">{isZh ? '全部标签' : 'All Tags'}</option>
           {tags.map((tag) => (
             <option key={tag.id} value={tag.id}>
-              {tag.name}
+              {isZh && tag.nameZh ? tag.nameZh : tag.name}
             </option>
           ))}
         </select>
@@ -126,7 +138,7 @@ export default function ToolListClient({
             onClick={() => router.push("/tools")}
             className="rounded-lg border border-red-200 px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
           >
-            清除筛选 / Clear
+            {isZh ? '清除筛选' : 'Clear'}
           </button>
         )}
       </div>

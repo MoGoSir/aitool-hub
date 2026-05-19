@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useLanguage } from "@/lib/LanguageContext";
 
 interface ToolCardProps {
   tool: {
@@ -16,7 +17,7 @@ interface ToolCardProps {
     minPrice?: number | null;
     isFeatured?: boolean;
     isVerified?: boolean;
-    categories: { icon?: string | null; name: string };
+    categories: { icon?: string | null; name: string; nameZh?: string | null };
     pricing_plans?: Array<{
       name: string;
       price: number;
@@ -51,7 +52,7 @@ const getDefaultIcon = (name: string): string => {
     "Murf": "🎙️",
     "Suno": "🎵",
     "Notion": "📚",
-    "Mem": "🧠",
+    "Mem": "",
     "Motion": "⏰",
     "Taskade": "✅",
     "Fireflies": "✨",
@@ -78,16 +79,15 @@ const getDefaultIcon = (name: string): string => {
 
 export default function ToolCard({ tool }: ToolCardProps) {
   const [logoError, setLogoError] = useState(false);
+  const { language } = useLanguage();
+  const isZh = language === "zh";
 
-  const pricingModelLabel: Record<string, string> = {
-    free: "Free",
-    freemium: "Freemium",
-    paid: "Paid",
-    enterprise: "Enterprise",
-  };
+  const pricingModelLabel: Record<string, string> = isZh
+    ? { free: "免费", freemium: "免费增值", paid: "付费", enterprise: "企业版" }
+    : { free: "Free", freemium: "Freemium", paid: "Paid", enterprise: "Enterprise" };
 
-  const displayName = tool.name;
-  const displayDescription = tool.description;
+  const displayName = isZh && tool.nameZh ? tool.nameZh : tool.name;
+  const displayDescription = isZh && tool.descriptionZh ? tool.descriptionZh : tool.description;
 
   return (
     <Link
@@ -105,7 +105,7 @@ export default function ToolCard({ tool }: ToolCardProps) {
               loading="lazy"
             />
           ) : (
-            <span className="drop-shadow-sm">{getDefaultIcon(displayName)}</span>
+            <span className="drop-shadow-sm">{getDefaultIcon(tool.name)}</span>
           )}
         </div>
         <div className="flex-1 min-w-0">
@@ -136,7 +136,7 @@ export default function ToolCard({ tool }: ToolCardProps) {
             <span className="text-sm">{tool.categories.icon}</span>
           )}
           <span className="text-xs text-gray-400">
-            {tool.categories.name}
+            {isZh && tool.categories.nameZh ? tool.categories.nameZh : tool.categories.name}
           </span>
         </div>
 
@@ -151,7 +151,7 @@ export default function ToolCard({ tool }: ToolCardProps) {
               </span>
             ) : (
               <span className="text-xs text-green-600 dark:text-green-400">
-                Free
+                {isZh ? "免费" : "Free"}
               </span>
             )
           )}

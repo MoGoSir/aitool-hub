@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Noto_Sans_SC } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
+import { LanguageProvider } from "@/lib/LanguageContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -91,11 +92,13 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${notoSansSC.variable} font-sans antialiased`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Header />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
-        </ThemeProvider>
+        <LanguageProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Header />
+            <main className="min-h-screen">{children}</main>
+            <Footer />
+          </ThemeProvider>
+        </LanguageProvider>
       </body>
     </html>
   );
