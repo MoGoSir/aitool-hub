@@ -119,6 +119,14 @@ model tools {
   lastPriceCheckedAt DateTime?
   isVerified         Boolean         @default(false)
   isFeatured         Boolean         @default(false)
+  pros               String?         @default("[]")
+  prosZh             String?         @default("[]")
+  cons               String?         @default("[]")
+  consZh             String?         @default("[]")
+  useCases           String?         @default("[]")
+  useCasesZh         String?         @default("[]")
+  faq                String?         @default("[]")
+  faqZh              String?         @default("[]")
   createdAt          DateTime        @default(now())
   updatedAt          DateTime
   price_history      price_history[]
@@ -131,4 +139,30 @@ model tools {
   @@index([pricingModel])
   @@index([slug])
   @@index([categoryId])
+}
+
+model articles {
+  id            String   @id
+  title         String
+  titleZh       String?
+  slug          String   @unique
+  excerpt       String
+  excerptZh     String?
+  content       String
+  contentZh     String?
+  coverImage    String?
+  category      String   @default("review")
+  tags          String   @default("[]")
+  relatedTools  String   @default("[]")
+  author        String   @default("AIToolHub")
+  status        String   @default("published")
+  publishDate   DateTime @default(now())
+  viewCount     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([slug])
+  @@index([category])
+  @@index([status])
+  @@index([publishDate])
 }

@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import HomePageContent from "./HomePageContent";
 
 export default async function HomePage() {
-  const [categories, toolCount, featuredTools, recentTools] = await Promise.all([
+  const [categories, toolCount, featuredTools, recentTools, articles] = await Promise.all([
     prisma.categories.findMany({
       include: { _count: { select: { tools: true } } },
       orderBy: { name: "asc" },
@@ -27,10 +27,15 @@ export default async function HomePage() {
       },
       orderBy: { createdAt: "desc" },
     }),
+    prisma.articles.findMany({
+      where: { status: "published" },
+      orderBy: { publishDate: "desc" },
+      take: 6,
+    }),
   ]);
 
   const toolsToShow =
     featuredTools.length >= 4 ? featuredTools : [...featuredTools, ...recentTools].slice(0, 8);
 
-  return <HomePageContent categories={categories} toolCount={toolCount} toolsToShow={toolsToShow} />;
+  return <HomePageContent categories={categories} toolCount={toolCount} toolsToShow={toolsToShow} articles={articles} />;
 }

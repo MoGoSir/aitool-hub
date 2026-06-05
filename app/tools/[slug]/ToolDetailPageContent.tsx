@@ -265,6 +265,105 @@ export default function ToolDetailPageContent({ tool, relatedTools }: ToolDetail
         <AdSense adSlot="TOOL_DETAIL_AD_SLOT_2" adFormat="auto" className="max-w-full" />
       </div>
 
+      {/* Pros and Cons */}
+      <section className="mt-16">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+          {isZh ? "优缺点分析" : "Pros & Cons"}
+        </h2>
+        <div className="mt-6 grid gap-6 md:grid-cols-2">
+          {/* Pros */}
+          <div className="rounded-xl border border-green-200 bg-green-50 p-6 dark:border-green-800 dark:bg-green-900/20">
+            <h3 className="flex items-center gap-2 text-lg font-semibold text-green-700 dark:text-green-400">
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+              {isZh ? "优点" : "Pros"}
+            </h3>
+            <ul className="mt-4 space-y-2">
+              {(() => {
+                try {
+                  const pros = JSON.parse(isZh && tool.prosZh && tool.prosZh !== "[]" ? tool.prosZh : (tool.pros || "[]"));
+                  return pros.map((p: string, i: number) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+                      <span className="mt-1 text-green-500">✓</span>
+                      {p}
+                    </li>
+                  ));
+                } catch { return null; }
+              })()}
+            </ul>
+          </div>
+          {/* Cons */}
+          <div className="rounded-xl border border-red-200 bg-red-50 p-6 dark:border-red-800 dark:bg-red-900/20">
+            <h3 className="flex items-center gap-2 text-lg font-semibold text-red-700 dark:text-red-400">
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" /></svg>
+              {isZh ? "缺点" : "Cons"}
+            </h3>
+            <ul className="mt-4 space-y-2">
+              {(() => {
+                try {
+                  const cons = JSON.parse(isZh && tool.consZh && tool.consZh !== "[]" ? tool.consZh : (tool.cons || "[]"));
+                  return cons.map((c: string, i: number) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+                      <span className="mt-1 text-red-500">✗</span>
+                      {c}
+                    </li>
+                  ));
+                } catch { return null; }
+              })()}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Use Cases */}
+      {(() => {
+        try {
+          const useCases = JSON.parse(isZh ? (tool.useCasesZh || "[]") : (tool.useCases || "[]"));
+          if (useCases.length === 0) return null;
+          return (
+            <section className="mt-16">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                {isZh ? "适用场景" : "Use Cases"}
+              </h2>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {useCases.map((uc: string, i: number) => (
+                  <div key={i} className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+                    <p className="text-sm text-gray-700 dark:text-gray-300">{uc}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          );
+        } catch { return null; }
+      })()}
+
+      {/* FAQ */}
+      {(() => {
+        try {
+          const faq = JSON.parse(isZh ? (tool.faqZh || "[]") : (tool.faq || "[]"));
+          if (!Array.isArray(faq) || faq.length === 0) return null;
+          return (
+            <section className="mt-16">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                {isZh ? "常见问题" : "FAQ"}
+              </h2>
+              <div className="mt-6 space-y-4">
+                {faq.map((item: any, i: number) => (
+                  <details key={i} className="group rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <summary className="cursor-pointer list-none p-4 font-medium text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400">
+                      {item.question}
+                      <span className="float-right transition-transform group-open:rotate-180">▼</span>
+                    </summary>
+                    <div className="px-4 pb-4 text-sm text-gray-600 dark:text-gray-400">
+                      {item.answer}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </section>
+          );
+        } catch { return null; }
+      })()}
+
       {/* Related Tools */}
       {relatedTools.length > 0 && (
         <section className="mt-16">

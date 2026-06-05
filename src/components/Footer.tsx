@@ -45,7 +45,7 @@ export default function Footer() {
               {isZh ? "资源" : "Resources"}
             </h4>
             <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-              <li><a href="#" className="hover:text-indigo-600">{isZh ? "博客" : "Blog"}</a></li>
+              <li><Link href="/articles" className="hover:text-indigo-600">{isZh ? "评测文章" : "Reviews"}</Link></li>
               <li><a href="#" className="hover:text-indigo-600">{isZh ? "API 文档" : "API Docs"}</a></li>
               <li><Link href="/submit" className="hover:text-indigo-600">{isZh ? "提交工具" : "Submit Tool"}</Link></li>
               <li><a href="#" className="hover:text-indigo-600">{isZh ? "广告合作" : "Advertise"}</a></li>

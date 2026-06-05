@@ -40,6 +40,12 @@ export default function Header() {
             {language === "zh" ? "分类" : "Categories"}
           </Link>
           <Link
+            href="/articles"
+            className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+          >
+            {language === "zh" ? "评测" : "Reviews"}
+          </Link>
+          <Link
             href="/about"
             className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
           >
